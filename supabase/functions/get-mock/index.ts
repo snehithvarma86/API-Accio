@@ -15,7 +15,9 @@ serve(async (req) => {
     const url = new URL(req.url)
     const id = url.searchParams.get('id')
 
-    if (!id) throw new Error('No ID provided')
+    if (!id || typeof id !== 'string' || id.length > 50) {
+      throw new Error('Invalid or missing ID');
+    }
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -36,7 +38,7 @@ serve(async (req) => {
     })
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: 'An error occurred' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
     })
